@@ -854,7 +854,8 @@ Copy the link to this newly created GitHub Repository.
 
 Come back to the terminal in VS-CODE and type these commands in succession:
 
-  git remote add origin <Link to GitHub Repo> //maps the remote repo link to local git repo
+  
+  git remote add origin <Link to GitHub Repo,**use http not SSH**> //maps the remote repo link to local git repo
 
 if you get an error message 'fatal: Could not read from remote repository' -> 
 change your ssh url by an http url for your remote 'origin', use:
