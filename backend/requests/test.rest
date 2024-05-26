@@ -1,0 +1,23 @@
+GET http://localhost:3001/
+
+###
+GET http://localhost:3001/api/notes
+
+###
+GET http://localhost:3001/api/notes/1
+
+###
+POST http://localhost:3001/api/notes
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+  {
+    "id": "5",
+    "title": "REST Testing",
+    "content": "REST testing",
+    "created": "9 Apr, 2024",
+    "edited": "16 Mar, 2024"
+  }
+

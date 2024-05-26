@@ -1,33 +1,80 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import DrawerList from './components/DrawerList '
+import Notes from './components/Notes';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import Footer from './components/Footer'
+import userStore from './components/userStore';
 import './App.css'
 
+import { 
+  AppBar, 
+  Toolbar, 
+} from '@mui/material'
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 function App() {
-  const [count, setCount] = useState(0)
+
+    const [open, setOpen] = useState(false);
+    const {setSearchTerms} = userStore()
+  
+    const toggleDrawer = (newOpen) => () => {
+      setOpen(newOpen);}
+
+ // const booksQry = useQuery(ALL_BOOKS)
+  //const authorsQry = useQuery(ALL_AUTHORS)
+
+  //if(authorsQry.loading || booksQry.loading) return console.log('loading...')
+/*
+  const notify = (input) => {
+    setMsg(input)
+    setTimeout(() => {
+      setMsg('')
+    }, 4000);
+  }*/
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ThemeProvider theme={darkTheme} >
+      <DrawerList open={open} toggleDrawer={toggleDrawer}/>
+        <AppBar position='sticky' >
+          <Toolbar>
+            <MenuIcon onClick={toggleDrawer(true)}/>
+            <p className ='myNotes'>MyNotes</p>
+            <input
+              size='14'
+              className='quickSearch'
+              placeholder='Search by Keywords'
+              onChange={({target})=>{setSearchTerms(target.value.toLowerCase().split(' '))}}
+            />
+            <SearchIcon fontSize='small' sx={{ml:'10px'}}/>
+          </Toolbar>
+        </AppBar>
+        <Notes/>
+        <Footer/>
+      {/*
+        <Notify msg={msg} /> 
+        <Routes>
+          <Route path='/' element={<Authors setNoti={notify}/>} />
+          <Route path='/login' element={<Login setNoti={notify}/>} />
+          <Route path='/books' element={<Books/>} />
+          <Route path='/addbook' element={<AddBook setNoti={notify}/>} />
+          <Route path='/search' element={<Author setNoti={notify}/>} />
+        </Routes>
+        <Footer sx={{ mt: 8, mb: 4 }} />
+        */}
+
+      
+      </ThemeProvider>
+      
+
+
     </>
   )
 }

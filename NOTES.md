@@ -25,7 +25,7 @@
 --- 1-d Exercises 1.6.-1.14
     rm -rf node_modules/ && npm i
 
---- 2-c Getting Data From Server
+--- 2-c (Backend) Getting Data From Server
     npm install -g json-server
     json-server --port 3001 --watch db.json
     npx json-server --port 3001 --watch db.json
@@ -105,7 +105,7 @@
     npm run build
     app.use(express.static('dist'))
 
---- 3-c MongoDB
+--- 3-c Backend MongoDB
     go to mongoDB site, register and click connect, select 'connect to your app'
 
     copy the MONGODB URL 'mongodb+srv://${pr....' <--- add to index.js (see below)
@@ -1592,4 +1592,275 @@ A non-serializable value was detected in an action, in the path....
             user.save(some_content)  <--- mongo may not be able to find the proper paths in the content
 
           to fix it, follow step 5.
+
+  --- Material Icons
+        npm install @mui/icons-material
+
+          import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+          import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+
+            OR
+          
+          import { AccessAlarm, ThreeDRotation } from '@mui/icons-material';
+
+  --- How to limit text/ long strings to 2 (3, 4, 5...n) lines with CSS
+        whith line-clamp syntax: 
+
+        .noteTitle {
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2; /* number of lines to show */
+                  line-clamp: 2; 
+          -webkit-box-orient: vertical;
+          white-space: nowrap;f
+        }
+
+  --- How to limit text/long strings to a certain width and trucate the rest with dots '...'?
+        define the element width and use white-space nowrap & ellipsis
+
+          .noteTitle {
+            text-overflow: ellipsis;
+            overflow: hidden; 
+            width: 160px; 
+            height: 1.2em; 
+            white-space: nowrap;
+          }
+
+  --- Specify width in *characters*
+        the unit to use is 'ch':
+
+        pre {
+          width: 80ch; /* classic terminal width for code sections */
+        }
+
+  --- How to create a React multi-word search / multiple-word search
+        try the following:
+
+          1.  const quickFilter = (terms, notes) => {
+                if ("" === terms || terms.length < 2) return notes;
+                terms = terms.map(val => val.replace(/\"/g, ""));
+                //words.push(terms);
+                return notes.filter((n) => {
+                  const v = Object.values(n);
+                  const f = JSON.stringify(v).toLowerCase();
+                  return terms.every(term => f.includes(term));
+                });
+              };
+
+              const notesToShow = quickFilter(searchTerms, notes)
+
+          2.  const filterIt = (terms, arr) => {
+                if ("" === terms || terms.length < 3) return arr;
+                var words = terms.match(/"[^"]+"|\w+/g);
+                
+                words = words.map(val => val.replace(/\"/g, ""));
+                //words.push(terms);
+                
+                return arr.filter((a) => {
+                  const v = Object.values(a);
+                  const f = JSON.stringify(v).toLowerCase();
+
+                  return words.every(val => f.includes(val));
+                });
+              };
+
+    --- Zustand/useState setState run in infinite loops:
+          1. most likely it's because curly brances {} and brackets [] got mixed during useStore declaration
+
+          2. ***DO NOT ever set value without a function/condition. 
+              eg:
+                    [name, setName] = useState('')
+
+                      setName('test') <== leaving setName here is going to cause infinite loop
+
+    --- How to sort by date:
+          You can use sort() and reverse() to sort meetings in descending order
+
+            var sorted_meetings = meetings.sort((a,b) => {
+                return new Date(a.scheduled_for).getTime() - 
+                    new Date(b.scheduled_for).getTime()
+            }).reverse();
+
+    --- Failed prop type: Invalid prop `children` supplied to `ForwardRef(InputLabel2)`, expected a ReactNode.
+          This happends when an object or prop that contains children is used as a sigle prop in the render
+          eg.
+                sortType: [
+                  { "id": 0, "txt": 'Newest First'},
+                  { "id": 1, "txt": 'Oldest First'},
+                  { "id": 2, "txt": 'Title (A-Z)'},
+                  { "id": 3, "txt": 'Last Edited'},
+                ],
+
+                <p> {sortType} </p>  <--- ERROR invalid Prop because render cannot disply sortType
+
+    --- Mui select items or fonts don't align
+        How to change mui icon size?
+
+          1. Material-UI has introduced components that handles this scenario better than using a style:|
+
+              import Typography from '@mui/material/Typography';
+              import Stack from '@mui/material/Stack';
+
+              <Stack alignItems="center" direction="row" gap={2}>
+                <LinkIcon />
+                <Typography variant="body1">Revolve</Typography>
+              </Stack>
+
+              OR:
+
+              <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+              }}>
+                  <LinkIcon />
+                  <span>revolve</span>
+              </div>  
+
+          2. icon size can be changed by 'fontSize':
+               <ChildFriendlyIcon fontSize='medium'/>
+
+          3. This is not a bug. You need to apply size="small" to <FormControl> too.
+                <FormControl fullWidth size="small">
+ 
+                <FormControl fullWidth size="small">
+                  <InputLabel id="key">Label</InputLabel>
+                  <Select
+                    id="key"
+                    value={key}
+                    label="Key"
+                    onChange={handleChange}
+                    required
+                    size="small">
+
+    --- How to create a backend server:
+       /////// See 2-C,
+        - create a folder 'backend'
+        - use json server as the tool to act as our server: npm install -g json-server
+        - add a db.json file with data
+        - to fetch data from server, we use axios: npm install axios
+        - Install json-server as a development dependency (only used during development):
+            npm install json-server --save-dev
+          and making a small addition to the scripts part of the package.json file:
+              "scripts": {
+                            "server": "json-server -p3001 --watch db.json"
+                          }
+        - To use Axios, add a file named "main.jsx":
+            import axios from 'axios'
+
+            const promise = axios.get('http://localhost:3001/notes')
+            console.log(promise)
+
+            const promiseCanBeAnyNameButJustUsePromise = axios.get('http://localhost:3001/test')
+            console.log(promiseCanBeAnyNameButJustUsePromise) ////////////////
+
+        See 3-a Simple web server
+        - start in backend folder with: npm init
+        - change the scripts object by adding a new script command:
+           "scripts": {
+              "start": "node index.js",
+            },
+        - add an index.js file:
+            console.log('testing') <-- just to make sure it works
+        - Then We can run the program directly with Node from the command line:
+            node index.js or npm start
+        - Now edit the index.js so it will work as a web server:
+
+            const http = require('http')
+
+            let notes = [    <-- this is our database
+              ...
+            ]
+
+            const app = http.createServer((request, response) => {
+              response.writeHead(200, { 'Content-Type': 'application/json' })
+              response.end(JSON.stringify(notes))
+            })
+        - Install EXPRESS so we don't have to write every line of code from scratch:
+          (fuzzy stuffs like http:.createServer...ect ect, with express we can replace by GET)
+
+            npm install express
+            npm update           <-- in case software is dated
+
+          in index.js import EXPRESS:
+            const express = require('express')
+            const app = express()
+
+        - Continue on with 3-a: 'Web and Express' after installing express
+        - After setting up Express, install Nodemon to help auto-refresh port 3001:
+            npm install --save-dev nodemon
+
+            change script:
+              "start": "node index.js",  <-- if we run 'npm start' it will run like before
+              "dev": "nodemon index.js", <-- 'npm run dev' will run under nodemon
+        - Then we use REST to provide the same REST http API like jason server, eg:
+            notes     GET     fetch all sources in the collection
+            notes/01  GET     fetch individual source
+            notes/01  POST    create a new source w/ requested data
+            notes/01  DELETE  remove a particular individual source
+            notes/01  PUT     replace the entire individual source w/ requested data
+
+        - Note that app.get('/api/notes/:id' ...), where the semicolon ":" means
+          the Express route will handle all GET req in "api/notes/SOMETHING", where SOMETHING can
+          be any string:
+
+            app.get('/api/notes/:id', (request, response) => {
+              const id = request.params.id  <-- *** note this id might be a string
+              const note = notes.find(note => note.id === id)
+              response.json(note)
+            })
+
+            *** if id is a 'string' type while note.id is 'number' type api/notes/SOMETHING may fail
+                  we shall convert id to a number (see 3-a Fetching a single resource):
+                    const id = Number(request.param.id)
+
+        - Add Express middleware function express.json() to help parsing JSON reqs:
+          (search app.use(express.json()) in 3-a)
+                      
+            const express = require('express')
+            const app = express()
+
+            app.use(express.json())   <--- Without the json-parser, the body property would be undefined
+              
+          Without the json-parser, the body property would be undefined. The json-parser takes the JSON data of a request, transforms it into a JavaScript object and then attaches it to the body property of the request object before the route handler is called
+
+        - To test the PUT/DELETE/POST operations in backend, look up Postman and REST Client in 3-a
+          *The test will not alter the actual database
+
+        - When use POST to add new entry, add some features like ID check, content checks...etc:
+          (search 'finalize the handling of the request' in 3-a)
+
+            eg: use uuid (look up uuid in part 8)
+
+                const { v1: uuid } = require('uuid')
+
+                const note = {
+                  content: body.content,
+                  important: Boolean(body.important) || false,
+                  id: uuid(),
+                }
+
+            eg:
+              const maxId = notes.length > 0
+              ? Math.max(...notes.map(n => n.id)) 
+              : 0
+
+            eg:
+              if (!body.content) {
+                return response.status(400).json({ 
+                  error: 'content missing' 
+                })
+              }
+
+      - Create a requestLogger or use Morgan (see part 3 excise 3.7)
+          npm install morgan
+
+          const morgan = require('morgan')
+
+          morgan.token("body", (req) => {
+            return JSON.stringify(req.body);
+          });
+
+          app.use(morgan("method-:method, status-:status, url-:url, body-:body"));
+
 
