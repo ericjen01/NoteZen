@@ -1,48 +1,33 @@
 import { 
   Link,
+  Paper,
   Table,
   Toolbar,
+  TableRow, 
   TableBody,
   TableCell,
   Typography,
-  TableRow, 
 } from '@mui/material'
-import * as React from 'react';
+import SortMenu from './SortMenu';
 import userStore from './userStore';
 import Highlighter from "react-highlight-words"
+import { useNavigate } from 'react-router-dom';
+
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import SortSelect from './SortSelect';
 
-/*
-const Title = (props) => (
-    <Typography component="h2" variant="h6" color="primary" gutterBottom>
-      {props.children}
-    </Typography>
-)
-
-Title.propTypes = {
-  children: PropTypes.node,
-};
-*/
-
-function preventDefault(event) {
-  event.preventDefault();
-}
-
-const noteCount = (obj) => {
-  if(obj.length > 1) {return (`${obj.length} notes`)}
-  else { return (`${obj.length} note`) }
-} 
 
 const Notes = () => {
+
+
   const {notes} = userStore()
   const {labelIdx} = userStore()
+  const navigate =  useNavigate()
   const {searchTerms} = userStore()
 
-  const quickFilter = (terms, notes) => {
-    if ("" === terms || terms.length <1) return notes;
+  const quickFilter = (terms, inputNotes) => {
+    if ("" === terms || terms.length <1) return inputNotes;
     terms = terms.map(val => val.replace(/"/g, ""));
-    const filteredNotes = notes.filter((n) => {
+    const filteredNotes = inputNotes.filter((n) => {
       const v = Object.values(n);
       const f = JSON.stringify(v).toLowerCase();
       return terms.every(term => f.includes(term));
@@ -69,16 +54,34 @@ const Notes = () => {
     }
   }
 
+  const styleObj = {
+    "&:hover": {
+      backgroundColor: "rgba(225,225,225,0.15)"
+    },
+    "&:active": {
+      backgroundColor: "rgba(225,225,225,0.15)"
+    }
+  };
+  
+  const preventDefault = (e) => {
+    e.preventDefault();
+  }
+  
+  const noteCount = (obj) => {
+    if(obj.length > 1) {return (`${obj.length} notes`)}
+    else { return (`${obj.length} note`) }
+  } 
+
   return (
-    <React.Fragment>
+    <Paper>
       <Toolbar>
         <p>{noteCount(notesToShow)}</p>
-        <SortSelect/>
+        <SortMenu/>
       </Toolbar>
-      <Table size='small'>
+      <Table size='small' >
         {notesToShow.map((n, i) => (
           i < 5 ?
-            <TableBody key={i}>
+            <TableBody key={i} onClick={()=>navigate(`/note/${n.id}`)} sx={styleObj}>
                 <TableRow>
                   <TableCell sx={{ borderBottom: "none", verticalAlign: 'top' }}>
                     <TextSnippetIcon className='txtsnippetIcon'/>
@@ -120,7 +123,7 @@ const Notes = () => {
       <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
         See more orders
       </Link>
-    </React.Fragment>
+    </Paper>
   );
 }
 

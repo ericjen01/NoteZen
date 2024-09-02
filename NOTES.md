@@ -115,7 +115,7 @@
     npm install mongoose
     npm install dotenv <--- for process.env.MONGODB_URI
 
-    OR: npm install mongoose dot env for both
+    OR: npm install mongoose dotenv for both
 
     create a schema file (eg. author.js, book.js etc) in backend/models folder:
       "part8/backend/models/author.js"
@@ -245,18 +245,9 @@
             ....
       
 
-          
-
-
-
-
-
-
-
       mongoose.set('strictQuery',false)
       mongoose.connect(url)
       MONGODB_URI=address_here npm run dev
-
 
       const PORT = process.env.PORT
       app.listen(PORT, () => {
@@ -1003,12 +994,21 @@ A non-serializable value was detected in an action, in the path....
         const [state, setState] = useStateContext();
 
 --- Cannot access [[promiseResult]] or the promise is showing pending
-    if the .then or async/await doesn't work,
-    try to store and retrieve the res.data through local storage:
 
-      window.localStorage.setItem('allStoredUsers', JSON.stringify(res.data))
+    - For the Front end, try use 'await' (without async) :
 
-      JSON.parse(window.localStorage.getItem('allStoredUsers'))
+        const notes = notesService.getAll()  <--- returns <pending> promise
+
+        const notes = await notesService.getAll()  <--- adding await solves the issue
+
+
+    - If the .then or async/await doesn't work,
+      try to store and retrieve the res.data through local storage:
+
+        window.localStorage.setItem('allStoredUsers', JSON.stringify(res.data))
+
+        JSON.parse(window.localStorage.getItem('allStoredUsers'))
+
 
 --- Desctructured variables, curly bracets in the brackets
       this means the variable already exists in a function/object that can be desctructured to make the code more neat
@@ -1374,6 +1374,8 @@ A non-serializable value was detected in an action, in the path....
         <Button style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}}/>
         In this case button always will look like a square and have a fix size (30px).
 
+
+
   --- Pop(), Push(), Concat() functions doesn't seem to work well for add/remove items from an array.
       Array elements on display doesn't seem to update when clicking on the button. UseState doesn't update correctly. (ex 8, frontend, addBook):
 
@@ -1523,6 +1525,29 @@ A non-serializable value was detected in an action, in the path....
   --- How to prevent mui dialog/popover from closing when click outside of the box/ clickaway?
 
         try hideBackdrop='true'
+
+  --- How to reduce or resize of MUI Input or mui Textfield, how to change font size in textfield label:
+
+        use inputProps={{sx:{ padding:'0 !important'}}}
+
+          inputProps={{sx:{width:'25ch', fontSize:15, padding:'1 !important'}}} 
+
+          and play with transform (below)
+
+        OR
+
+        use transform 
+          sx={{transform:'scale(0.7, 0.7)'}}  <--- x 0.7, 70.7
+        
+        include translate if needed:
+          sx={{transform: "translate(-14px, -14px) scale(0.7)"}}
+        
+        for width, use width:
+          sx={{transform:'scale(.7)', ml:'auto', width:'22ch'}}   <--- width is 22ch
+
+        font size change:
+          inputProps={{style: {fontSize: 40}}} // font size of input text
+          InputLabelProps={{style: {fontSize: 40}}} // font size of input label
 
   --- Move focus to a text field programmatically on button click/ Javascript setting a textarea with focus() does not work 
 
@@ -1734,25 +1759,6 @@ A non-serializable value was detected in an action, in the path....
                     size="small">
 
     --- How to create a backend server:
-       /////// See 2-C,
-        - create a folder 'backend'
-        - use json server as the tool to act as our server: npm install -g json-server
-        - add a db.json file with data
-        - to fetch data from server, we use axios: npm install axios
-        - Install json-server as a development dependency (only used during development):
-            npm install json-server --save-dev
-          and making a small addition to the scripts part of the package.json file:
-              "scripts": {
-                            "server": "json-server -p3001 --watch db.json"
-                          }
-        - To use Axios, add a file named "main.jsx":
-            import axios from 'axios'
-
-            const promise = axios.get('http://localhost:3001/notes')
-            console.log(promise)
-
-            const promiseCanBeAnyNameButJustUsePromise = axios.get('http://localhost:3001/test')
-            console.log(promiseCanBeAnyNameButJustUsePromise) ////////////////
 
         See 3-a Simple web server
         - start in backend folder with: npm init
@@ -1864,3 +1870,188 @@ A non-serializable value was detected in an action, in the path....
           app.use(morgan("method-:method, status-:status, url-:url, body-:body"));
 
 
+    --- how to add an independent temporary database db.json to either fronted or backend?
+          - create a file db.json
+          - in the file just add:
+              ***no need to declare variable, just everything in an object bracket {}
+              ***no need to export anything
+              {
+                "persons": [
+                  {
+                    "name": "Arto Hellas",
+                    "number": "040-123456",
+                    "id": 1
+                  },
+                  {
+                    "name": "Ada Lovelace",
+                    "number": "39-44-5323523",
+                    "id": 2
+                  },
+                ]
+              }
+
+          - In any file that requires the data just import it:
+
+              const database = require('./db.json')
+              const persons = database.persons
+
+    --- How to pass down params like id, content of an object with usNavigate?
+          - use 'useParams()':
+
+              - in App:
+                <Routes>
+                  <Route path='/' element={<Notes/>} />
+                  <Route path='/:id' element={<SingleNotePage/>} />
+                </Routes>
+
+              - in Notes:
+                   onClick={()=>navigate(`/${n.id}`)
+
+              - in SingleNotePage:
+                  const Note = ({ notes }) => { 
+                  const id = useParams().id             <-----------------
+                  const note = notes.find(n => n.id === Number(id))
+
+    --- What's the best option to store date and time into the database for easy access?
+          I just want to mention Mongodb through Node.js, one thing I am suffering is that has no real concept of timezones for UTC Date() or numbers (milliseconds) in JavaScript. If I had been storing UTC dates in MongoDB, for example a Date() object, but it's unexpectedly complicated and error-prone to converted it to the timezone they are happened to. As a result, I've decided to use simple strings like the good old Date string standard yyyy-mm-dd::hh::mm::ss to store date time, and I'll parse into Date() objects as needed in the client side.
+
+    --- How to parse a string to date?
+          use moment js:
+            If you know the format of an input string, you can use that to parse a moment. moment("12-25-1995", "MM-DD-YYYY"); The parser ignores non-alphanumeric characters by default, so both of the following will return the same thing.
+
+          eg:
+            import moment from 'moment'
+            const note = [{date1: '2024-03-31'},{date2: '2023-01-01}]
+
+            const date1 = moment(note.date1, 'YYYY-MM-DD').format('MMM Do YYYY')
+            const date2 = moment(note.date2, 'YYYY-MM-DD').format('MMM Do YYYY')
+
+    --- Gap on the right/left/top/bottom of the page 
+          Try star with the #root setting in css:
+
+            #root {
+              width: 100%;      <---- this should eliminate the gap
+              text-align: left;
+            }
+        
+          or try the css reset:
+
+             * { width: 100%; margin:0; padding:0; box-sizing:border-box; } 
+ 
+    --- How to keep footer at the bottom of the page, or get the rid of the gap at page bottom?
+          You need to tell your footer to position itself to the bottom of the surrounding container:
+
+          Footer css:
+
+          position: absolute;  <--- *** For scroll friendly solution use position: fixed; You may also need                         to add a z-index to keep it above other elements.
+          left:0;
+          bottom:0;
+          right:0;
+          And for the container (the react-root div):
+
+          padding-bottom:60px;
+
+
+          const Footer = () => (
+            <Box sx={{
+              left:'0', 
+              right:'0', 
+              bottom:'0', 
+              position:'fixed', 
+              color:'text.primary', 
+              bgcolor:'background.default', 
+            }}>
+
+    --- How to fill the gap between an element to the fixed-position element at the bottomr of page
+
+          <Box sx={{
+            position:'fixed',  <---- keep the element fixed at the bottom
+            bottom:'0', 
+            right:'0', 
+            left:'0', 
+            height:'100%',      <----- 100% makes it covers the entire page
+            zIndex:'-1'         <----- low z index ensures the 100% heigh dones't cover other elements
+            display:'flex',                 <---- flex + reverse direction keeps stuffs at the bottom 
+            flexDirection:'column-reverse', 
+          }}>
+
+        OR add a dummy element with some height:
+                      <TableCell sx={{ height:'44vh', zIndex:'-1' }}></TableCell>
+
+    How to make a mui select drop down menu showing image icon as label?
+      - try use the "displayEmpty" property in Select tag:
+                   
+          <Select displayEmpty>        <---------- displayEmpty
+            <MenuItem value={""}>
+              <img src={h1Icon} width={'31px'}/>
+            </MenuItem>
+            <MenuItem>
+              <img src={h1Icon} width={'31px'}/>
+            </MenuItem>
+          </Select>
+    
+    --- React Material UI createTheme_default is not a fun
+          I had the same error so I removed all material ui dependency and reinstalled them, it worked for me.
+
+          yarn remove @mui/material @emotion/react @emotion/styled 
+          or
+
+          npm uninstall @mui/material @emotion/react @emotion/styled 
+
+    --- TipTap EditorContent / editor / useEditor dones't seem to update changed content via search:
+
+          Try the editor's setContent command: 
+            editor.commands.setContent(highlightMatch(searchTerms,content1))
+
+          Combine the setContent with an OnClick button event to force the re-reder:
+
+            <button 
+              onClick={() => {
+                editor.commands.setContent(highlightMatch(searchTerms,content1))
+              }}
+            >
+              search: {searchTerms}
+            </button>
+
+    --- How to get the rid of dropdown icon in mui select?
+        How to make mui select button size smaller?
+        How to remove mui select border/outline?
+
+          https://github.com/mui/material-ui/issues/26473
+         To remove drop down icon, in the <Select> tag, add IconComponent:
+          
+          <Select 
+            IconComponent= {() => null} <-- removes dropdown icon
+            inputProps= {{ sx: { padding: '0 !important' } }} <-- this shrinks the button size
+            sx={{'.MuiOutlinedInput-notchedOutline': { border: 0 }}}  <---removes outline
+          >
+          
+          OR,
+          
+          Add IconComponent prop and throgh a random mui component (eg, Box)
+          to override the arrow icon, then overwrite the padding to remove the claimed space for the icon.
+
+          import {Box}from '@mui/material';
+
+          <Select  
+            IconComponent = {Box} <-- removes dropdown icon
+            inputProps= {{ sx: { padding: '0 !important' } }} <-- this shrinks the button size
+            sx={{'.MuiOutlinedInput-notchedOutline': { border: 0 }}}  <---removes outline
+          >
+
+  --- React state, Onclick will not fire first time.. only second
+        setState is an asynchronous action so what you are displaying is the first state of addtolist that is either null | undefined. If you want to actually see the current state you setted then use useEffect hook: useEffect(() => { console.log(addtolist); }, [addtolist])
+
+  --- Hide scrollable content behind transparent fixed position divs when scrolling the page?
+
+        .wrapper {
+            position:fixed;
+            z-index:10;
+            background:inherit;
+        }
+
+        .bottom-wrapper {
+            z-index:5;
+        }
+
+  --- How to change the style of navbar on route change

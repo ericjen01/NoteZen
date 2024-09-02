@@ -1,12 +1,15 @@
 import { create } from 'zustand'
-import { data } from '../data';
 import TitleIcon from '@mui/icons-material/Title';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ChildFriendlyIcon from '@mui/icons-material/ChildFriendly';
 
+import notesService from '../services/notesService';
+
+const notes = await notesService.getAll()
+
 const userStore = create((set) => ({
-  notes: data,
+  notes: notes,
   labelIdx: 0,
   sortType: [
     { "id": 0, "txt": 'Newest First', "icon": <ChildFriendlyIcon/>},
@@ -15,9 +18,9 @@ const userStore = create((set) => ({
     { "id": 3, "txt": 'Last Edited', "icon": <EditNoteIcon/>},
   ],
   searchTerms: [''],
-  setLabelIdx: (idx) => set(() => ({labelIdx:idx})),
-  setNotes: (obj) => set(() => ({notes:obj})),
+  setNotes: (arr) => set(() => ({notes:arr})),
   setSorType: (txt) => set(() => ({sortType:txt})),
+  setLabelIdx: (idx) => set(() => ({labelIdx:idx})),
   setSearchTerms: (terms) => set(() => ({searchTerms:terms})),
 }))
 
