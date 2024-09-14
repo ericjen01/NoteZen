@@ -11,7 +11,7 @@ import sunIcon from '../assets/sun.png'
 import mooIcon from '../assets/moon.png'
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
-import { switchHandler } from '../functions/functions';
+import { switchTheme } from '../functions/functions';
 import horizontalLogo from '../assets/horizontal-logo.png'
 import SingleNoteButtonGroup from './SingleNoteButtonGroup';
 
@@ -43,7 +43,7 @@ const NavBar = () => {
             <Button {...colorModeButton} >
               <img 
                 width={'15px'}
-                onClick={()=>switchHandler(savedColorMode)}
+                onClick={()=>switchTheme(savedColorMode)}
                 src={savedColorMode==="true"?mooIcon:sunIcon} 
               />
             </Button>

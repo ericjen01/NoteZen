@@ -3,6 +3,7 @@ import {
   Box,
   Stack,
   Paper,
+  TextField,
   Typography, 
 } from '@mui/material'
 import userStore from "./userStore"
@@ -12,13 +13,14 @@ import { showDate } from '../functions/functions'
 
 import StarterKit from '@tiptap/starter-kit'
 import TipTapTable from '@tiptap/extension-table'
-import TipTapButtonGroup from './TipTapButtonGroup'
 import Underline from '@tiptap/extension-underline'
 import Highlight from '@tiptap/extension-highlight'
+import TipTapButtonGroup from './TipTapButtonGroup'
 import {EditorContent, useEditor} from '@tiptap/react'
 import TableHeader from '@tiptap/extension-table-header'
 import TipTapTableRow from '@tiptap/extension-table-row'
 import TipTapTableCell from '@tiptap/extension-table-cell'
+import notesService from '../services/notesService'
 
 const SingleNotePage = () => {
 
@@ -27,6 +29,15 @@ const SingleNotePage = () => {
   const note = (userStore().notes).find(n => n.id === id)
   const {title} = note
   const {content} = note
+
+  const updateTitle = (e) => {
+    console.log(e.target.value)
+    const newNote = {
+      title: e.target.value,
+      content: content
+    }
+    notesService.update(id, newNote)
+  }
 
   const editor = useEditor({
     extensions: [
@@ -69,6 +80,12 @@ const SingleNotePage = () => {
           >
             {title}
           </Typography>
+          <TextField
+            label={ title.length > 1 ? title: "Error"}
+            defaultValue={title}
+            variant="standard"
+            onChange={updateTitle}
+          />
           <Stack 
             gap={0} 
             direction="row" 
@@ -87,6 +104,5 @@ const SingleNotePage = () => {
     
   )
 }
-
 
 export default SingleNotePage

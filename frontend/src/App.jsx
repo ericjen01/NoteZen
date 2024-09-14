@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import SlideMenu from './components/SlideMenu';
 import { Routes, Route} from 'react-router-dom' 
+import NewNoteForm from './components/NewNoteForm';
 import SingleNotePage from './components/SingleNotePage'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -31,6 +32,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Notes/>} />
           <Route path='/api/notes' element={<Notes/>} />
+          <Route path='/create' element={<NewNoteForm/>} />
           <Route path='/note/:id' element={<SingleNotePage/>} />
         </Routes>
         <Footer/>

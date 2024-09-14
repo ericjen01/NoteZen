@@ -115,11 +115,11 @@ Tools Use for developing this project:
    ```
    ```
    npm install 
-    @mui/material @emotion/react @emotion/styled
-    react-router-dom
-    zustand 
-    react-highlight-words
     moment 
+    zustand 
+    react-router-dom
+    react-highlight-words
+    @mui/material @emotion/react @emotion/styled
    ```
 ### Backend/Server:
 * [Express](https://www.npmjs.com/package/express) -  Framework for Node.js
@@ -127,18 +127,25 @@ Tools Use for developing this project:
 * [morgan](https://github.com/expressjs/morgan) -     HTTP request logger middleware for node.js
 * [UUID](https://github.com/uuidjs/uuid#readme) -     For creating unique UUID for each new element entry
 * [MongoDB](https://www.mongodb.com/) -               Cloud database for the app  
+* [bcrypt](https://github.com/kelektiv/node.bcrypt.js)- Library for hashing passwords
 * [Axios](https://github.com/axios/axios) -           Library for making HTTP requests    
 * [CORS](https://github.com/expressjs/cors) -         Eliminate the 'block by CORS policy' issue
 * [dotenv](https://github.com/motdotla/dotenv) -      Keep enviroment vars separate from code
+* [uniqueValidator](https://www.npmjs.com/package/mongoose-unique-validator)- A MongoDB plugin validating in Mongoose schema
+* [JSON Web Tokens](https://github.com/auth0/node-jsonwebtoken)-
+                                                      Safe exchange of information from A to B as JSON object
   ```
   npm install 
-    express
-    --save-dev nodemon
-    morgan
-    uuid    
-    mongoose
     cors
+    uuid    
+    morgan
+    bcrypt
     dotenv
+    express
+    mongoose
+    jsonwebtoken
+    --save-dev nodemon
+    mongoose-unique-validator
   ```
   ```
   npm update

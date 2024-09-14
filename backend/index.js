@@ -1,17 +1,13 @@
-const database = require('./db.json')
-const Note = require('./models/note')
-const { v1: uuid } = require('uuid')
-const express = require('express')
-const morgan = require('morgan')
-const cors = require('cors')
-const app = express()
+const app = require('./app')
+const config = require('./utils/config')
+const logger = require('./utils/logger')
 
-app.use(cors())
-app.use(express.json())
-app.use(morgan("method-:method, status-:status, url-:url, body-:body"));
 
-morgan.token("body", (req) => JSON.stringify(req.body));
+//app.use(morgan("method-:method, status-:status, url-:url, body-:body"));
 
+//morgan.token("body", (req) => JSON.stringify(req.body));
+
+/*
 const notes = database.notes
 
 app.get('/', (req, res) => {
@@ -25,6 +21,17 @@ app.get('/api/notes', (req, res) => {
 app.get('/api/notes/:id', (req, res) => {
   const id = req.params.id
   const note = notes.find(n => n.id === id)
+  res.json(note)
+})
+
+app.put('/api/notes/:id', (req, res) => {
+  const body = req.body
+  const id = req.params.id
+  const note = {
+    title: body.title,
+    content: body.content,
+    id: id
+  }
   res.json(note)
 })
 
@@ -59,4 +66,11 @@ app.delete('/api/notes/:id', (req, res) => {
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+})
+
+*/
+
+
+app.listen(config.PORT, () => {
+	logger.info(`Server running on port ${config.PORT}`)
 })

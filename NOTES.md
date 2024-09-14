@@ -2055,3 +2055,7 @@ A non-serializable value was detected in an action, in the path....
         }
 
   --- How to change the style of navbar on route change
+
+        const path = location.pathname.split('/')[1]   say, 'com/note/1', result will be 'note'
+
+        {path==='note' && <SingleNoteButtonGroup/>}    if path results 'note' display <SigleNoteBu..
