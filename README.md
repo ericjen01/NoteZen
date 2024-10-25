@@ -56,11 +56,26 @@ demo2
 ## Running the tests
 [(Back to top)](#table-of-contents)
 
+### Break down into backend tests
+
+[Supertest]https://www.npmjs.com/package/supertest - supertest package for testing the API
+[cross-env]https://www.npmjs.com/package/cross-env - allows variables across various platforms
+
+```
+npm install --save-dev 
+  supertest
+  cross-env
+```
+Test Setup: In package.json, 'test' script is added
+```
+    "test": "cross-env  NODE_ENV=test node --test",
+```
+Then test can be run with the command
+```
+  npm run test
+```
 How to run the automated tests for this system (Under Construction)
 
-### Break down into end to end tests
-
-Purpose of the tests (Under Construction)
 
 ```
 demo 1
@@ -72,6 +87,8 @@ Purpose of the tests (Under Construction)
 ```
 demo 1
 ```
+
+### Break down into end to end tests
 
 ## Deployment
 [(Back to top)](#table-of-contents)

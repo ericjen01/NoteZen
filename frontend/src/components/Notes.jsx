@@ -11,10 +11,12 @@ import {
 } from '@mui/material'
 import SortMenu from './SortMenu';
 import userStore from './userStore';
+import { addButtonStyle } from '../styles';
+import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import Highlighter from "react-highlight-words"
 import { showDate } from '../functions/functions';
-import AddBoxIcon from '@mui/icons-material/AddBox';
+import { quickFilter } from '../functions/functions';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 
 const Notes = () => {
@@ -23,17 +25,6 @@ const Notes = () => {
   const {labelIdx} = userStore()
   const navigate =  useNavigate()
   const {searchTerms} = userStore()
-
-  const quickFilter = (terms, inputNotes) => {
-    if ("" === terms || terms.length <1) return inputNotes;
-    terms = terms.map(val => val.replace(/"/g, ""));
-    const filteredNotes = inputNotes.filter((n) => {
-      const v = Object.values(n);
-      const f = JSON.stringify(v).toLowerCase();
-      return terms.every(term => f.includes(term));
-    });
-    return filteredNotes
-  };
   const notesToShow = quickFilter(searchTerms, notes)
 
   const styleObj = {
@@ -60,17 +51,10 @@ const Notes = () => {
         <h4>{noteCount(notesToShow)}</h4>
         <SortMenu/>
         <Button 
-          size='large'
+          {...addButtonStyle}
           onClick={()=>navigate("../create")} 
-          sx={{
-            ml:'auto', 
-            color:'white', 
-            textTransform: 'none',
-            backgroundColor:'#d4a373', 
-          }}
         > 
-          <AddBoxIcon sx={{mr:'7px'}}/>
-          New Note
+          <AddIcon/>
         </Button>
       </Toolbar>
       <Table size='small' >
@@ -124,15 +108,23 @@ const Notes = () => {
             </TableBody>
           : null
         ))}
-      </Table> 
-      <Link 
-        href="#" 
-        sx={{ mt: 3 }}
-        color="primary" 
-        onClick={preventDefault} 
-      >
-        See more orders
-      </Link>
+      </Table>
+      {notesToShow.length > 0 ?
+         <Link 
+          href="#" 
+          sx={{ mt:3, ml:'40%' }}
+          color="primary" 
+          onClick={preventDefault} 
+        >
+          See more Notes
+        </Link>
+        : 
+        <Typography 
+          sx={{ mt:3, ml:'40%' }}
+        >
+          --No Note To Show--
+        </Typography>
+      } 
     </Paper>
   );
 }

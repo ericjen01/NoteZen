@@ -1,42 +1,71 @@
 import './App.css'
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Box } from '@mui/material';
 import Notes from './components/Notes';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import SlideMenu from './components/SlideMenu';
+import LoginForm from './components/LoginForm';
+import userStore from './components/userStore';
 import { Routes, Route} from 'react-router-dom' 
+import notesService from './services/notesService';
 import NewNoteForm from './components/NewNoteForm';
+import PrivateRoute from './components/PrivateRoute';
 import SingleNotePage from './components/SingleNotePage'
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import loginService from './services/loginService';
 
 const App = () => {
 
-  const [open, setOpen] = useState(false);
-  const toggleDrawer = (newOpen) => () => {setOpen(newOpen);}
-  const lightColorMode = window.localStorage.getItem('lightColorMode')
+  const {
+    user, 
+    users,
+    notes, 
+    setUser, 
+    setUsers,
+    setNotes, 
+  } = userStore()
 
-  const getColorTheme = () => {
-    if(lightColorMode === 'true') {
-      return createTheme({palette: {mode: 'light',},});
+
+  useEffect( () => {
+    const savedUser = window.localStorage.getItem('savedUser') 
+    const savedNotes = window.localStorage.getItem('savedNotes')
+    const isOnline = window.navigator.onLine
+
+    if (isOnline) {
+      notesService.getAll()
+      loginService.getUsers().then(res => { 
+        setUsers(res)
+        console.log('users: ', users)
+      })
+
+      window.localStorage.setItem('savedNotes', notes)
     }else{
-      return createTheme({palette: {mode: 'dark',},});
+      setUsers([])
+      if(savedNotes){setNotes(savedNotes)}
+      else{setNotes([])}
     }
-  }
 
+    if(savedUser){
+      console.log('savedUser: ', savedUser)
+      setUser(JSON.parse(savedUser))
+      notesService.setToken(user.token)
+      notesService.getAll().then(res => setNotes(res))
+    }
+  },[])
+
+  console.log('users 2:' , users)
   return (
     <Box>
-      <ThemeProvider theme={getColorTheme} >
-        <SlideMenu open={open} toggleDrawer={toggleDrawer}/>
-        <NavBar />
-        <Routes>
-          <Route path='/' element={<Notes/>} />
-          <Route path='/api/notes' element={<Notes/>} />
-          <Route path='/create' element={<NewNoteForm/>} />
-          <Route path='/note/:id' element={<SingleNotePage/>} />
-        </Routes>
-        <Footer/>
-      </ThemeProvider>
+      <SlideMenu/>
+      <NavBar/>
+      <Routes>
+        <Route path='/' element={<PrivateRoute><Notes/></PrivateRoute>} />
+        <Route path='/login' element={<LoginForm/>} />
+        <Route path='/api/notes' element={<PrivateRoute><Notes/></PrivateRoute>} />
+        <Route path='/create' element={<NewNoteForm/>} />
+        <Route path='/note/:id' element={<SingleNotePage/>} />
+      </Routes>
+      <Footer/>
     </Box>
   )
 }

@@ -1,6 +1,46 @@
 
+import userStore from '../components/userStore';
+import loginService from '../services/loginService';
+import notesService from '../services/notesService';
+const {
+  notes, 
+  setNotes, 
+  username, 
+  password, 
+  messageObj, 
+  setPassword, 
+  setUsername, 
+  setMessageObj 
+} = userStore
+
+
 export const refreshPage = () => {
   window.location.reload();
+}
+
+export const handleLogin = async (e) => {
+  e.preventDefault()
+  try {
+    const user = await loginService.login({ username, password })
+    window.localStorage.setItem('loggedinBlogUser', JSON.stringify(user))
+    notesService.setToken(user.token)
+
+    const noteList = notes.sort((a, b) => b.likes - a.likes)
+
+    setNotes(noteList)
+   // setUser(user)
+    setUsername('')
+    setPassword('')
+    handleMessage('login successful.', 'success')
+  }
+  catch (ex) {
+    handleMessage('wrong credentials', 'error')
+  }
+}
+
+export const handleMessage = (message, type) => {
+  setMessageObj({ message, type })
+  setTimeout(() => { setMessageObj() }, 2000)
 }
 
 export const switchTheme = (savedColorMode) =>{
@@ -28,7 +68,6 @@ export const highlightMatch = (searchTerms, text) => {
 }
 
 export const showDate = (noteObj, labelIdx) => {
-  
   const today = new Date()
   const oneDay = 24 * 60 * 60 * 1000
   const editedDate = new Date(noteObj.edited)
@@ -46,5 +85,16 @@ export const showDate = (noteObj, labelIdx) => {
     } else return (`Created on ${noteObj.created}`) 
   }
 }
+
+export const quickFilter = (terms, inputNotes) => {
+  if ("" === terms || terms.length <1) return inputNotes;
+  terms = terms.map(val => val.replace(/"/g, ""));
+  const filteredNotes = inputNotes.filter((n) => {
+    const v = Object.values(n);
+    const f = JSON.stringify(v).toLowerCase();
+    return terms.every(term => f.includes(term));
+  });
+  return filteredNotes
+};
 
 

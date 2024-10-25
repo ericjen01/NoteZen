@@ -13,15 +13,17 @@ const getTokenFrom = req => {
 }
 
 notesRouter.get('/', async (req, res) => {
+  console.log('controller > notes > notesRouter.get > notes: getting notes...')
     const notes = await Note.find({})  
+    console.log('controller > notes > notesRouter.get > notes: ', notes)
        res.json(notes)
 })
 
 notesRouter.get('/:id', async (req, res, next) => {
     const id = req.params.id
-    const blog = await Blog.findById(id)
-    blog
-    ? res.json(blog)
+    const note = await Note.findById(id)
+    note
+    ? res.json(note)
     : res.status(404).end()
 })
 
@@ -29,6 +31,7 @@ notesRouter.post('/', async (req, res, next) => {
 
     let token
     const body = req.body
+    console.log("body: ", body)
     const { title, url, likes, author } = req.body;
 
     (req.user)
@@ -44,8 +47,8 @@ notesRouter.post('/', async (req, res, next) => {
     if(!(decodedUser && title && url)){
         return res.status(400).json({error: 'title, token and url required'})
     }
-    console.log("....blog: ", decodedUser.username)
-    console.log("....blog: ", decodedUser._id)
+    console.log("....note: ", decodedUser.username)
+    console.log("....note: ", decodedUser._id)
 
 const note = new Note({
         title: body.title,
@@ -57,11 +60,10 @@ const note = new Note({
             username: decodedUser.username
         }
     })
-    
-    const savedBlog = await blog.save()
-    decodedUser.notes = decodedUser.notes.concat(savedBlog._id)
+    const savedNote = await note.save()
+    decodedUser.notes = decodedUser.notes.concat(savedNote._id)
     await decodedUser.save()
-    res.status(201).json(savedBlog)
+    res.status(201).json(savedNote)
 })
 
 notesRouter.put("/:id", async (req, res, next) => {
@@ -69,14 +71,14 @@ notesRouter.put("/:id", async (req, res, next) => {
     const { title, content, user, created, edited } = req.body;
     const id = req.params.id;
     const newNote = new Note({title, content, user, created, edited})
-    const savedBlog = await Note.findByIdAndUpdate(id, blog, {new: true,})
-    res.status(200).json(savedBlog)
+    const savedNote = await Note.findByIdAndUpdate(id, note, {new: true,})
+    res.status(200).json(savedNote)
   });
 
 notesRouter.delete('/:id', async (req, res, next) => {
     const id = req.params.id
     const user = req.user
-    const blog = await Note.findByIdAndRemove(id)
+    const note = await Note.findByIdAndRemove(id)
     res.status(204).end()
 })
 

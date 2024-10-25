@@ -39,7 +39,7 @@ const userExtractor = async (req, res, next) => {
 
 module.exports = {
 	reqLogger,
-	unknownEndpoint,
 	errHandler,
 	userExtractor,
+	unknownEndpoint,
 }

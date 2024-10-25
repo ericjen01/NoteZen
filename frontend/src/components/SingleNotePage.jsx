@@ -73,7 +73,6 @@ const SingleNotePage = () => {
         bgcolor:'background.default', 
       }}>
         <TipTapButtonGroup editor={editor}/>
-
         <Box sx={{pt:'30px'}}>
           <Typography 
             sx={{fontWeight:'bold', fontSize:'1.2rem'}}

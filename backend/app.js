@@ -20,7 +20,7 @@ app.use('/api/login', loginRouter)
 app.use(morgan("method-:method, status-:status, url-:url, body-:body"));
 
 mongoose.set('strictQuery', false)
-logger.info('connecting to', config.MONGO_URI)
+logger.info('app.js > connecting to', config.MONGO_URI)
 morgan.token("body", (req) => JSON.stringify(req.body));
 
 mongoose.connect(config.MONGO_URI)
@@ -31,17 +31,8 @@ mongoose.connect(config.MONGO_URI)
   logger.error('error connecting to MongoDB:', error.message)
 })
 
-if (process.env.NODE_ENV === 'test') {
-  console.log("connecting to testing data")
-  const testingRouter = require('./controllers/cypressTesting.js')
-  app.use('/api/testing', testingRouter)
-}
-
-app.use(middleware.reqLogger(
-    "method-:method, status-:status, url-:url, body-:body"
-  )
-);
-//app.use(middleware.errorHandler)
-//app.use(middleware.unknownEndpoint)
+app.use(middleware.errHandler)
+app.use(middleware.unknownEndpoint)
+app.use(middleware.reqLogger("method-:method, status-:status, url-:url, body-:body"));
 
 module.exports = app

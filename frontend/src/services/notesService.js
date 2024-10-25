@@ -11,6 +11,11 @@ const config = () => ({
     },
 });
 
+const setToken = (newToken) => {
+  token = `Bearer ${newToken}`
+  console.log("*** f services token: ", token)
+}
+
 const handleMessage = (message, type, detail) => {
   console.log(type, 'message', detail)
 }
@@ -62,4 +67,5 @@ export default {
   create,
   update,
   getAll, 
+  setToken,
 }

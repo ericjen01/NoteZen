@@ -993,7 +993,37 @@ A non-serializable value was detected in an action, in the path....
         with 
         const [state, setState] = useStateContext();
 
---- Cannot access [[promiseResult]] or the promise is showing pending
+--- Cannot access [[promiseResult]] or the promise is showing pending. Async function returns Promise <Pending> instead of a value
+
+    - You are not following the correct code pattern to handle async/Promises. When you're chaining methods, the promise is resolved inside the callback, not outside.
+
+      The return of .then() method is a promise object.
+
+      The correct code is this:
+
+      let createOrder = async function () { 
+        let response = await client.execute(request);
+        return response 
+      };
+
+      createOrder().then((result)=> {
+        //the promise is resolved here
+        console.log(result)
+      }).catch(console.error.bind(console))
+
+
+      Another example: 
+        setNotes(await notesService.getAll())
+        console.log('notes: ', notes)           <--- returns promise pending
+
+
+        notesService.getAll().then(result => { 
+          setNotes(result)
+          console.log('result: ', restult.data)          <---- returns notes
+          console.log('notes: ', notes)          <---- **returns nothing, but state actually updated
+        })
+        console.log('notes: ', notes) <----- showing notes that state is actually updated
+
 
     - For the Front end, try use 'await' (without async) :
 
@@ -1537,7 +1567,7 @@ A non-serializable value was detected in an action, in the path....
         OR
 
         use transform 
-          sx={{transform:'scale(0.7, 0.7)'}}  <--- x 0.7, 70.7
+          sx={{transform:'scale(0.7, 0.7)'}}  <--- x 0.7, y 0.7
         
         include translate if needed:
           sx={{transform: "translate(-14px, -14px) scale(0.7)"}}
@@ -2059,3 +2089,162 @@ A non-serializable value was detected in an action, in the path....
         const path = location.pathname.split('/')[1]   say, 'com/note/1', result will be 'note'
 
         {path==='note' && <SingleNoteButtonGroup/>}    if path results 'note' display <SigleNoteBu..
+
+
+  --- You are providing a function without....
+        I wrote my ThemeProvider in the MainLayout and then received this error message, then i took it in Index component as the parent of the MainLayout then it has been solved
+        The point of ThemeProvider, is that every component in Mui will have access to the styles
+
+  --- Material UI dark theme isn't applied to the background
+        You need to include the <CssBaseline /> component at the root of your app as this is what deals with changing the background colour on the body.
+
+          <ThemeProvider theme={getColorTheme}>
+            <CssBaseline/>            <----------------
+            <React.StrictMode>
+              <Router>
+                <App/>
+              </Router>
+            </React.StrictMode>
+          </ThemeProvider>
+
+  --- How to redirect to login page when not authenticated
+        Check out NoteZen > App.js, components > PrivateRoute.js
+        The way I like to do it, is to create a <PrivateRoute/> component, so that it is clear that whatever route is nested requires an authenticated user.
+
+        const PrivateRoute = (props: { children: React.ReactNode }): JSX.Element => {
+          const { children } = props
+          const isLoggedIn: boolean = localStorage.getItem('logged_user') !== null;
+          const location = useLocation()
+
+          return isLoggedIn ? (
+            <>{children}</>
+          ) : (
+            <Navigate
+              replace={true}
+              to="/login"
+              state={{ from: `${location.pathname}${location.search}` }}
+            />
+          )
+        }
+        Then in your App.tsx
+
+        const App: FC = () => (
+          <BrowserRouter>
+              <Routes>
+                <Route path="/main" element={<PrivateRoute> <Main/> </PrivateRoute>}/>
+                <Route path="/about" element={<PrivateRoute> <About/> </PrivateRoute>}/>
+                <Route path="/login" element={<Login/>}/>
+              </Routes>
+          </BrowserRouter>
+        )
+        As an added extra, the from variable that is passed to the state in the <PrivateRoute/> component, allows you to redirect the user back to whichever page they came from after logging in.
+
+  --- How to use Material-UI Link with react-router-dom Link?
+
+        You can use the component prop of Material-UI's Link to integrate with Link in react-router-dom. You can do the same thing with Material-UI's Button.
+
+          import { Route } from "react-router";
+          import { BrowserRouter as Router, Link as RouterLink } from "react-router-dom";
+          import Link from "@material-ui/core/Link";
+          import Button from "@material-ui/core/Button";
+
+          export default function LinkRouter() {
+            return (
+              <Router>
+                <div>
+                  <Link component={RouterLink} to="/">
+                    Link to Home
+                  </Link>
+                  <br />
+                  <Link component={RouterLink} to="/inner">
+                    Link to inner page
+                  </Link>
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component={RouterLink}
+                    to="/inner"
+                  >
+
+  --- How to set an element/text/button/border to mui palette text color?
+        see: https://mui.com/system/palette/
+        
+        sx={{ bgcolor:'text.disabled'}}
+        sx={{ color:'text.primary'}}
+        sx={{ color:'text.secondary'}} .... etc
+
+  --- Mui color palatte options:
+        'text.primary'
+        'text.secondary'
+        'text.disabled'
+        bgcolor='rgba(192,192,192,0.1)' 
+
+  --- How to set the width of Material UI drawer/ how to eliminate drawer gap 
+
+        For MUI version 5, you have to use the PaperProps prop like so:
+
+          <Drawer
+            PaperProps={{
+              sx: { width: "90%" },  <--- set to 100% if you want no gap
+            }}
+          >
+            /* ...child elements */
+          </Drawer>
+
+  --- How can I type a special character or symbol like "<" or a ">" in my HTML paragraph
+
+         is written using &gt; and < with &lt;
+            <p>
+              text &gt; text  <--- make sure &gt is followed by ";"
+            </p>
+
+            <h4> &lt; GO BACK </h4>
+
+  --- Using form with MUI onSubmit method not working, 
+
+        Since you defined your Box component as a form, you have to place your onSubmit inside it.
+
+        <Box component="form" onSubmit={submitHandler}>  <--- add ' component="form" '
+          <TextField />
+          <Button type="submit">Submit</Button>
+        </Box>
+
+  --- event.target.value when stored using react hooks is one step behind
+
+        Everyone's saying it's because setState is asynchronous, but that's wrong.
+
+          It will always stay the "previous value" because it's what's being captured by the closure. Click here to read more about closures on MDN.
+
+      Here's what happens in a nutshell:
+
+          You create a variable newChange and assign it to the first member of the array returned from useState. Let's say it's "Hell"
+
+          You capture the the value of newChange in your closure handleChange.
+
+          You call setNewChange with the new value. No matter what this function does, the value of newChange in this scope will never change, which is why you get the previous value.
+
+          Because setState invalidates your component, marking it for reconciliation, it will render again, which takes you back to step 1. only this time, the value being captured will be "Hello"
+
+      What can you do about this?
+
+          Just use the variable that you passed to setState if you need its value later in the function.
+
+          If for some reason you really must keep a reference to it, outside of the scope of the callback function, you can use useRef().current to store it without causing a re-render.
+
+          If you want to do something else when the value of your state changes, you should do it in an effect instead of handling it in your event listener, using useEffect.
+
+          By the way, if for some reason you don't believe me, just think about it this way: you're assigning that value to a const which cannot be reassigned. If you wanted to get a different value from it in the same frame you would have to reassign it, since it's a string. So if you tried doing this outside of React with just simple functions it still wouldn't work the way you expect. This has nothing to do with React and everything to do with JS.
+
+  --- How to validate if my list consist of same name and alert already exist?
+
+        Try this: 
+          var index = boardTitlesList.findIndex((item) => {
+              return item.boardTitle === SEARCHED_TITLE
+          });
+
+          if (index === -1) {
+              /* NOT FOUND */
+          } else {
+              /* FOUND */
+          }

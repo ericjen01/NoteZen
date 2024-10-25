@@ -1,28 +1,26 @@
 const mongoose = require('mongoose')
 
 const noteSchema = new mongoose.Schema({
-  note:{
-    title: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-    user: {
-      type: String,
-      required: true,
-    },
-    created: {
-      type: String,
-      required: true,
-    },
-    edited: {
-      type: String,
-      required: true,
-    },
-  }
+  title: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  user: {
+    type: String,
+    required: true,
+  },
+  created: {
+    type: String,
+    required: true,
+  },
+  edited: {
+    type: String,
+    required: true,
+  },
 })
 
 noteSchema.set('toJSON', {
@@ -33,5 +31,5 @@ noteSchema.set('toJSON', {
   }
 })
 //schema.plugin(uniqueValidator)
-
+ 
 module.exports = mongoose.model('Note', noteSchema)
